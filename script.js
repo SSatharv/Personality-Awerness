@@ -293,7 +293,6 @@ const traitToType = {
 
 
 
-
 document.getElementById("personality-form").addEventListener("submit", function (e) {
   e.preventDefault();
   const formData = new FormData(this);
@@ -310,12 +309,22 @@ document.getElementById("personality-form").addEventListener("submit", function 
     if (type) scores[type]++;
   });
 
-  const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  // Sort and filter out types with 0 scores
+  const sorted = Object.entries(scores)
+    .filter(([_, score]) => score > 0)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 2); // Get top 2
 
-  const resultText = `
-    <p>🎯 <strong>Dominant Personality:</strong> ${sorted[0][0]} (${sorted[0][1]} traits)</p>
-    <p>🥈 <strong>Second Personality:</strong> ${sorted[1][0]} (${sorted[1][1]} traits)</p>
-  `;
+  let resultText = "";
+
+  if (sorted.length > 0) {
+    resultText += `<p>🎯 <strong>Dominant Personality:</strong> ${sorted[0][0]} (${sorted[0][1]} traits)</p>`;
+  }
+
+  if (sorted.length > 1) {
+    resultText += `<p>🥈 <strong>Second Personality:</strong> ${sorted[1][0]} (${sorted[1][1]} traits)</p>`;
+  }
 
   document.getElementById("result").innerHTML = resultText;
 });
+
